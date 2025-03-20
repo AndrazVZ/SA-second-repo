@@ -37,6 +37,30 @@ void writeOutputFile(const string &filename, const vector<unsigned char> &number
     file.close();
 }
 
+void countingSortByBit(vector<unsigned char> &arr, int bit) {
+    vector<unsigned char> output(arr.size());
+    vector<int> count(2, 0);
+
+    for (unsigned char num : arr)
+        count[(num >> bit) & 1]++;
+
+    count[1] += count[0];
+
+    for (int i = arr.size() - 1; i >= 0; i--) {
+        int bitValue = (arr[i] >> bit) & 1;
+        output[--count[bitValue]] = arr[i];
+    }
+
+    arr = output;
+}
+
+void radixSort(vector<unsigned char> &arr) {
+    for (int bit = 0; bit < 8; bit++) {
+        countingSortByBit(arr, bit);
+    }
+}
+
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         cerr << "Uporaba: " << argv[0] << " <vhodna datoteka>" << endl;
@@ -44,6 +68,8 @@ int main(int argc, char *argv[]) {
     }
 
     vector<unsigned char> numbers = readInputFile(argv[1]);
+    radixSort(numbers);
+    writeOutputFile("out.txt", numbers);
     
     return 0;
 }
